@@ -1,5 +1,5 @@
-module.exports = function(grunt) {
-
+module.exports = function (grunt) {
+  var serveStatic = require('serve-static');
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     watch: {
@@ -8,7 +8,7 @@ module.exports = function(grunt) {
       },
       jade: {
         tasks: ["jade:debug"],
-        files: ["**/*.jade", "**/*.md", "!layouts/*.jade", "!layouts/*/*.jade"]
+        files: ["**/*.jade", "**/*.md"]
       }
     },
     jade: {
@@ -28,7 +28,7 @@ module.exports = function(grunt) {
       publish: {
         options: {
           locals: {
-            livereload: false
+            livereload: true
           }
         }
       }
@@ -46,12 +46,12 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['jade:debug', 'web']);
   grunt.registerTask('publish', ['jade:publish']);
 
-  grunt.registerTask('web', 'Start web server...', function() {
+  grunt.registerTask('web', 'Start web server...', function () {
     var options = this.options();
     var connect = require('connect');
-    connect.createServer(
-        connect.static(__dirname)
-    ).listen(options.port);
+    serveStatic('.tmp');
+    connect().use('/bower_components', serveStatic('./bower_components'));
+
     console.log('http://localhost:%s', options.port);
 
     grunt.task.run(["watch:jade"]);
